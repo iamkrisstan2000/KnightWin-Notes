@@ -1,0 +1,1421 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:models="using:KnightWinNotes.Models"
+        x:Class="KnightWinNotes.Views.MainWindow"
+        Width="1120"
+        Height="740"
+        MinWidth="680"
+        MinHeight="460"
+        Title="KnightWin Notes"
+        Icon="avares://KnightWinNotes/Assets/KnightWinNotes.png"
+        Background="Transparent"
+        TransparencyBackgroundFallback="{DynamicResource FallbackSolidChromeBg}"
+        TransparencyLevelHint="AcrylicBlur, Blur, Transparent"
+        WindowStartupLocation="CenterScreen"
+        DragDrop.AllowDrop="True">
+
+  <Grid x:Name="RootWindowGrid" RowDefinitions="42,*" Background="Transparent">
+
+    <!-- =================================================================== -->
+    <!-- ROW 0: WINDOWS 11 FLUENT INTEGRATED TITLE & TAB BAR                 -->
+    <!-- =================================================================== -->
+    <Grid Grid.Row="0" Background="{DynamicResource TabRailBg}">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+
+      <!-- Left App Icon / Settings Back Button -->
+      <Grid Grid.Column="0">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="6,0,4,0" Spacing="4">
+          <Button x:Name="SettingsBackBtn"
+                  Classes="cmdBarIcon"
+                  IsVisible="False"
+                  Width="36"
+                  Height="28"
+                  Margin="2,0,2,0"
+                  ToolTip.Tip="Back to Editor (Esc)"
+                  Click="OnSettingsBackClick">
+            <PathIcon Data="{StaticResource IconArrowBack}" Width="14" Height="14" Foreground="{DynamicResource TextPrimary}" />
+          </Button>
+
+          <Image Source="avares://KnightWinNotes/Assets/KnightWinNotes.png"
+                 Width="22"
+                 Height="22"
+                 Margin="6,0,4,0"
+                 VerticalAlignment="Center"
+                 RenderOptions.BitmapInterpolationMode="HighQuality" />
+
+          <TextBlock x:Name="SettingsTitleLabel"
+                     Text="KnightWin Notes"
+                     IsVisible="False"
+                     FontSize="12.5"
+                     VerticalAlignment="Center"
+                     Margin="4,0,0,0"
+                     Foreground="{DynamicResource TextPrimary}" />
+        </StackPanel>
+
+        <!-- Continuous 1px bottom titlebar seam to the left of the tab strip (hidden in Settings so Left Pane connects seamlessly!) -->
+        <Border x:Name="LeftTitleSeamBorder"
+                Height="1"
+                VerticalAlignment="Bottom"
+                Background="{DynamicResource TitleBarSeamBrush}"
+                IsHitTestVisible="False" />
+      </Grid>
+
+      <!-- Tabs Strip + Draggable Title Region -->
+      <Grid Grid.Column="1" x:Name="TitleBarInteractiveGrid" Background="Transparent" PointerPressed="OnTitleBarPointerPressed">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <ScrollViewer x:Name="TabStripScroller"
+                      Grid.Column="0"
+                      MaxWidth="780"
+                      HorizontalScrollBarVisibility="Hidden"
+                      VerticalScrollBarVisibility="Disabled"
+                      VerticalAlignment="Bottom">
+          <ItemsControl x:Name="TabsItemsControl">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal" Spacing="0" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="models:NoteTabItem">
+                <Grid ColumnDefinitions="Auto,3">
+                  <Border Grid.Column="0"
+                          CornerRadius="8,8,0,0"
+                          Height="35"
+                          MinWidth="148"
+                          MaxWidth="235"
+                          Margin="0,7,0,0"
+                          Padding="11,0,6,0"
+                          Tag="{Binding}"
+                          PointerPressed="OnTabBorderPointerPressed"
+                          Classes.activeTab="{Binding IsSelected}">
+                    <Border.Styles>
+                      <Style Selector="Border">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="BorderBrush" Value="Transparent" />
+                        <Setter Property="BorderThickness" Value="1,1,1,0" />
+                      </Style>
+                      <Style Selector="Border:pointerover">
+                        <Setter Property="Background" Value="{DynamicResource TabHoverBg}" />
+                      </Style>
+                      <Style Selector="Border.activeTab">
+                        <Setter Property="Background" Value="{DynamicResource TabActiveBg}" />
+                        <Setter Property="BorderBrush" Value="{DynamicResource SubtleBorderBrush}" />
+                      </Style>
+                    </Border.Styles>
+
+                    <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Stretch">
+                      <PathIcon Grid.Column="0"
+                                Data="{StaticResource IconShieldLock}"
+                                Width="12.5"
+                                Height="12.5"
+                                Margin="0,0,6,0"
+                                IsVisible="{Binding IsSecureFile}"
+                                Foreground="{DynamicResource AccentPrimary}"
+                                VerticalAlignment="Center" />
+
+                      <!-- Filename / Untitled + Windows Notepad Yellow Unsaved Dot right beside text -->
+                      <Grid Grid.Column="1" ColumnDefinitions="Auto,Auto" HorizontalAlignment="Left" VerticalAlignment="Center">
+                        <TextBlock Grid.Column="0"
+                                   Text="{Binding HeaderTitle}"
+                                   MaxWidth="148"
+                                   FontSize="12.5"
+                                   TextTrimming="CharacterEllipsis"
+                                   VerticalAlignment="Center"
+                                   Foreground="{DynamicResource TextPrimary}" />
+
+                        <Ellipse Grid.Column="1"
+                                 Width="7"
+                                 Height="7"
+                                 Margin="7,1,2,0"
+                                 VerticalAlignment="Center"
+                                 Fill="{DynamicResource UnsavedYellowDotBrush}"
+                                 IsVisible="{Binding IsModified}"
+                                 ToolTip.Tip="Unsaved changes" />
+                      </Grid>
+
+                      <Button Grid.Column="2"
+                              Classes="subtle"
+                              Width="24"
+                              Height="24"
+                              Padding="0"
+                              Margin="6,0,0,0"
+                              Tag="{Binding}"
+                              ToolTip.Tip="Close Tab (Ctrl+W)"
+                              Click="OnCloseTabClick">
+                        <PathIcon Data="{StaticResource IconClose}" Width="9.5" Height="9.5" Foreground="{DynamicResource TextSecondary}" />
+                      </Button>
+                    </Grid>
+                  </Border>
+
+                  <!-- 1px bottom titlebar seam under inactive tabs ONLY (active tab opens seamlessly into Command Bar!) -->
+                  <Border Grid.Column="0"
+                          Height="1"
+                          VerticalAlignment="Bottom"
+                          Background="{DynamicResource TitleBarSeamBrush}"
+                          IsVisible="{Binding !IsSelected}"
+                          IsHitTestVisible="False" />
+
+                  <!-- 1px bottom titlebar seam across 3px inter-tab gap -->
+                  <Border Grid.Column="1"
+                          Width="3"
+                          Height="1"
+                          VerticalAlignment="Bottom"
+                          Background="{DynamicResource TitleBarSeamBrush}"
+                          IsHitTestVisible="False" />
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+
+        <!-- + New Tab Button -->
+        <Button x:Name="NewTabBtn"
+                Grid.Column="1"
+                Classes="subtle"
+                Width="30"
+                Height="28"
+                Padding="0"
+                Margin="4,6,0,2"
+                VerticalAlignment="Center"
+                ToolTip.Tip="New Tab (Ctrl+N)"
+                Click="OnNewTabClick">
+          <PathIcon Data="{StaticResource IconPlus}" Width="12" Height="12" Foreground="{DynamicResource TextPrimary}" />
+        </Button>
+
+        <!-- Empty Drag Space -->
+        <Border Grid.Column="2" Background="Transparent" />
+
+        <!-- Continuous 1px bottom titlebar seam under + button & titlebar drag region -->
+        <Border x:Name="RightTitleSeamBorder"
+                Grid.Column="1"
+                Grid.ColumnSpan="2"
+                Height="1"
+                VerticalAlignment="Bottom"
+                Background="{DynamicResource TitleBarSeamBrush}"
+                IsHitTestVisible="False" />
+      </Grid>
+
+      <!-- Native Windows 11 Caption Buttons Spacer (Minimize / Maximize Snap / Close) + 1px bottom seam -->
+      <Border x:Name="WindowsCaptionSpacer" Grid.Column="2" Width="0" Background="Transparent" IsHitTestVisible="False">
+        <Border x:Name="CaptionTitleSeamBorder" Height="1" VerticalAlignment="Bottom" Background="{DynamicResource TitleBarSeamBrush}" />
+      </Border>
+    </Grid>
+
+    <!-- =================================================================== -->
+    <!-- ROW 1: MAIN WORKSPACE + SETTINGS + DIALOG OVERLAY                   -->
+    <!-- =================================================================== -->
+    <Grid Grid.Row="1">
+
+      <!-- ================================================================= -->
+      <!-- VIEW A: NOTEPAD EDITOR WORKSPACE                                  -->
+      <!-- ================================================================= -->
+      <Grid x:Name="EditorWorkspaceGrid" RowDefinitions="33,*,Auto">
+
+        <!-- Menu & Quick Save Action Strip -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource MenuBarBg}"
+                Padding="6,0,8,0">
+          <Grid ColumnDefinitions="Auto,*,Auto">
+
+            <!-- Standard Windows 11 Notepad Menu Bar -->
+            <Menu x:Name="MainTopMenu" Grid.Column="0" Classes="topMenu" Background="Transparent" VerticalAlignment="Center">
+              <MenuItem x:Name="FileMenuItem" Header="_File">
+                <MenuItem Header="New Tab" InputGesture="Ctrl+N" Click="OnNewTabClick">
+                  <MenuItem.Icon><PathIcon Data="{StaticResource IconPlus}" Width="13.5" Height="13.5" /></MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="New Window" InputGesture="Ctrl+Shift+N" Click="OnNewWindowClick">
+                  <MenuItem.Icon><PathIcon Data="{StaticResource IconWindowNew}" Width="14.5" Height="14.5" /></MenuItem.Icon>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Open..." InputGesture="Ctrl+O" Click="OnOpenFileClick">
+                  <MenuItem.Icon><PathIcon Data="{StaticResource IconFolderOpen}" Width="14.5" Height="14.5" /></MenuItem.Icon>
+                </MenuItem>
+                <MenuItem x:Name="RecentFilesMenuItem" Header="Recent Files">
+                  <MenuItem.Icon><PathIcon Data="{StaticResource IconHistoryClock}" Width="14.5" Height="14.5" /></MenuItem.Icon>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Save" InputGesture="Ctrl+S" Click="OnSaveClick">
+                  <MenuItem.Icon><PathIcon Data="{StaticResource IconSaveOutline}" Width="14.5" Height="14.5" /></MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Save As (Choose Mode)..." InputGesture="Ctrl+Shift+S" Click="OnSaveAsChoiceClick">
+                  <MenuItem.Icon><PathIcon Data="{StaticResource IconSaveAs}" Width="14.5" Height="14.5" /></MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Close Tab" InputGesture="Ctrl+W" Click="OnCloseActiveTabClick">
+                  <MenuItem.Icon><PathIcon Data="{StaticResource IconClose}" Width="12" Height="12" /></MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Exit" InputGesture="Alt+F4" Click="OnExitClick">
+                  <MenuItem.Icon><PathIcon Data="{StaticResource IconExitDoor}" Width="14.5" Height="14.5" /></MenuItem.Icon>
+                </MenuItem>
+              </MenuItem>
+
+              <MenuItem Header="_Edit">
+                <MenuItem Header="Undo" InputGesture="Ctrl+Z" Click="OnUndoClick">
+                  <MenuItem.Icon><PathIcon Data="{StaticResource IconUndo}" Width="14.5" Height="14.5" /></MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Redo" InputGesture="Ctrl+Y" Click="OnRedoClick">
+                  <MenuItem.Icon><PathIcon Data="{StaticResource IconRedo}" Width="14.5" Height="14.5" /></MenuItem.Icon>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Cut" InputGesture="Ctrl+X" Click="OnCutClick">
+                  <MenuItem.Icon><PathIcon Data="{StaticResource IconCut}" Width="14.5" Height="14.5" /></MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Copy" InputGesture="Ctrl+C" Click="OnCopyClick">
+                  <MenuItem.Icon><PathIcon Data="{StaticResource IconCopy}" Width="14.5" Height="14.5" /></MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Paste" InputGesture="Ctrl+V" Click="OnPasteClick">
+                  <MenuItem.Icon><PathIcon Data="{StaticResource IconPaste}" Width="14.5" Height="14.5" /></MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Delete" InputGesture="Delete" Click="OnDeleteSelectionClick">
+                  <MenuItem.Icon><PathIcon Data="{StaticResource IconClose}" Width="12" Height="12" /></MenuItem.Icon>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Find..." InputGesture="Ctrl+F" Click="OnOpenFindClick">
+                  <MenuItem.Icon><PathIcon Data="{StaticResource IconSearch}" Width="14" Height="14" /></MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Find Next" InputGesture="F3" Click="OnFindNextClick" />
+                <MenuItem Header="Find Previous" InputGesture="Shift+F3" Click="OnFindPrevClick" />
+                <MenuItem Header="Replace..." InputGesture="Ctrl+H" Click="OnOpenReplaceClick" />
+                <MenuItem Header="Go To Line..." InputGesture="Ctrl+G" Click="OnOpenGoToLineClick" />
+                <Separator />
+                <MenuItem Header="Select All" InputGesture="Ctrl+A" Click="OnSelectAllClick" />
+                <MenuItem Header="Time/Date" InputGesture="F5" Click="OnInsertTimeDateClick">
+                  <MenuItem.Icon><PathIcon Data="{StaticResource IconHistoryClock}" Width="14" Height="14" /></MenuItem.Icon>
+                </MenuItem>
+              </MenuItem>
+
+              <MenuItem Header="_View">
+                <MenuItem Header="Zoom">
+                  <MenuItem.Icon><PathIcon Data="{StaticResource IconSearch}" Width="14" Height="14" /></MenuItem.Icon>
+                  <MenuItem Header="Zoom In" InputGesture="Ctrl+OemPlus" Click="OnZoomInClick" />
+                  <MenuItem Header="Zoom Out" InputGesture="Ctrl+OemMinus" Click="OnZoomOutClick" />
+                  <MenuItem Header="Restore Default Zoom (100%)" InputGesture="Ctrl+D0" Click="OnZoomResetClick" />
+                </MenuItem>
+                <Separator />
+                <MenuItem x:Name="WordWrapMenuItem" Header="Word Wrap" Click="OnToggleWordWrapClick">
+                  <MenuItem.Icon><PathIcon x:Name="WordWrapCheckIcon" Data="{StaticResource IconCheck}" Width="13.5" Height="13.5" /></MenuItem.Icon>
+                </MenuItem>
+                <MenuItem x:Name="StatusBarMenuItem" Header="Status Bar" Click="OnToggleStatusBarClick">
+                  <MenuItem.Icon><PathIcon x:Name="StatusBarCheckIcon" Data="{StaticResource IconCheck}" Width="13.5" Height="13.5" /></MenuItem.Icon>
+                </MenuItem>
+              </MenuItem>
+            </Menu>
+
+            <!-- Right-Side Clean Command Bar: Secure Mode Icon Toggle (Default Off) + Settings Gear -->
+            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Spacing="4">
+              <!-- Icon-Only Secure Mode Toggle (Unselected by default, Selected when active) -->
+              <Button x:Name="SecureModeToggleBtn"
+                      Classes="secureToggle"
+                      ToolTip.Tip="Secure Mode: Off (Saves as Plain .txt) — Click to enable .kwnote encryption"
+                      Click="OnToggleSecureModeClick">
+                <PathIcon x:Name="SecureModeToggleIcon"
+                          Data="{StaticResource IconShieldOutline}"
+                          Width="14.5"
+                          Height="14.5"
+                          Foreground="{DynamicResource TextSecondary}" />
+              </Button>
+
+              <Border Width="1" Height="14" Background="{DynamicResource SubtleBorderBrush}" Margin="2,0" />
+
+              <!-- Windows 11 Notepad Settings Gear Icon -->
+              <Button x:Name="OpenSettingsBtn"
+                      Classes="cmdBarIcon"
+                      ToolTip.Tip="Settings"
+                      Click="OnOpenSettingsClick">
+                <PathIcon Data="{StaticResource IconSettingsGear}" Width="15" Height="15" Foreground="{DynamicResource TextPrimary}" />
+              </Button>
+            </StackPanel>
+          </Grid>
+        </Border>
+
+        <!-- Notepad Writing Pad Sheet + Floating Find/Replace Bar (5% Dark / 2% Light Acrylic Gutter) -->
+        <Grid Grid.Row="1" Background="{DynamicResource MenuBarBg}">
+          <Grid x:Name="PadCardBorder" Margin="6,0,6,2">
+            <Border CornerRadius="8"
+                    ClipToBounds="True"
+                    Background="{DynamicResource PadBackground}"
+                    BorderThickness="0">
+              <Grid>
+                <TextBox x:Name="EditorTextBox"
+                         Classes="notepadEditor"
+                         AcceptsReturn="True"
+                         AcceptsTab="True"
+                         TextWrapping="Wrap"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                         PropertyChanged="OnEditorTextBoxPropertyChanged"
+                         TextChanged="OnEditorTextChanged" />
+
+                <!-- Floating Windows 11 Notepad Find & Replace Overlay Card -->
+              <Border x:Name="FindReplacePanel"
+                      IsVisible="False"
+                      HorizontalAlignment="Right"
+                      VerticalAlignment="Top"
+                      Margin="0,12,18,0"
+                      Width="410"
+                      CornerRadius="8"
+                      Padding="12,10"
+                      Background="{DynamicResource DialogSurfaceBg}"
+                      BorderBrush="{DynamicResource CardBorderBrush}"
+                      BorderThickness="1"
+                      BoxShadow="0 8 24 0 #33000000">
+                <StackPanel Spacing="8">
+                  <Grid ColumnDefinitions="*,4,Auto,4,Auto,4,Auto,4,Auto,4,Auto">
+                    <TextBox x:Name="FindQueryBox"
+                             Grid.Column="0"
+                             Watermark="Find in note..."
+                             FontSize="13"
+                             KeyDown="OnFindQueryKeyDown" />
+                    <ToggleButton x:Name="MatchCaseToggle"
+                                  Grid.Column="2"
+                                  Content="Aa"
+                                  FontSize="12"
+                                  Width="30"
+                                  Height="30"
+                                  Padding="0"
+                                  HorizontalContentAlignment="Center"
+                                  VerticalContentAlignment="Center"
+                                  ToolTip.Tip="Match case" />
+                    <Button Grid.Column="4" Classes="subtle" Width="28" Height="30" Padding="0" ToolTip.Tip="Previous (Shift+F3)" Click="OnFindPrevClick">
+                      <TextBlock Text="↑" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Button>
+                    <Button Grid.Column="6" Classes="subtle" Width="28" Height="30" Padding="0" ToolTip.Tip="Next (F3)" Click="OnFindNextClick">
+                      <TextBlock Text="↓" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Button>
+                    <Button Grid.Column="8" Classes="subtle" Width="28" Height="30" Padding="0" ToolTip.Tip="Toggle Replace (Ctrl+H)" Click="OnToggleReplaceRowClick">
+                      <TextBlock Text="⇄" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Button>
+                    <Button Grid.Column="10" Classes="subtle" Width="28" Height="30" Padding="0" ToolTip.Tip="Close Find (Esc)" Click="OnCloseFindClick">
+                      <PathIcon Data="{StaticResource IconClose}" Width="10" Height="10" Foreground="{DynamicResource TextSecondary}" />
+                    </Button>
+                  </Grid>
+
+                  <Grid x:Name="ReplaceRowGrid" IsVisible="False" ColumnDefinitions="*,6,Auto,6,Auto">
+                    <TextBox x:Name="ReplaceWithBox" Grid.Column="0" Watermark="Replace with..." FontSize="13" />
+                    <Button Grid.Column="2" Classes="secondary" Padding="10,5" Content="Replace" FontSize="12" Click="OnReplaceSingleClick" />
+                    <Button Grid.Column="4" Classes="secondary" Padding="10,5" Content="Replace all" FontSize="12" Click="OnReplaceAllClick" />
+                  </Grid>
+
+                  <TextBlock x:Name="FindStatusLabel"
+                             Text=""
+                             IsVisible="False"
+                             FontSize="11.5"
+                             Foreground="{DynamicResource TextSecondary}" />
+                </StackPanel>
+              </Border>
+              </Grid>
+            </Border>
+
+            <!-- Crisp Unmasked 1px Rounded Perimeter Frame (Always above editor content in focused, unfocused & menu-open states) -->
+            <Border CornerRadius="8"
+                    BorderBrush="{DynamicResource PadBorderBrush}"
+                    BorderThickness="1"
+                    IsHitTestVisible="False" />
+          </Grid>
+        </Grid>
+
+        <!-- Windows 11 Notepad Status Bar -->
+        <Border x:Name="StatusBarBorder"
+                Grid.Row="2"
+                Height="30"
+                Background="{DynamicResource StatusBarBg}">
+          <Grid ColumnDefinitions="Auto,*,Auto" Margin="14,0">
+            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Spacing="12">
+              <TextBlock x:Name="StatusCaretText" Text="Ln 1, Col 1" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
+              <Border Width="1" Height="12" Background="{DynamicResource SubtleBorderBrush}" />
+              <TextBlock x:Name="StatusCountText" Text="0 characters  •  0 words" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
+              <Border Width="1" Height="12" Background="{DynamicResource SubtleBorderBrush}" />
+              <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                <PathIcon x:Name="StatusSecurityIcon"
+                          Data="{StaticResource IconDocumentPlain}"
+                          Width="11.5"
+                          Height="11.5"
+                          Foreground="{DynamicResource AccentPrimary}" />
+                <TextBlock x:Name="StatusSecurityText"
+                           Text="Plain Text (.txt)"
+                           FontSize="11.5"
+                           Foreground="{DynamicResource TextSecondary}" />
+              </StackPanel>
+            </StackPanel>
+
+            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Spacing="10">
+              <Button Classes="subtle" Padding="6,2" ToolTip.Tip="Click to reset zoom to 100%" Click="OnZoomResetClick">
+                <TextBlock x:Name="StatusZoomText" Text="100%" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
+              </Button>
+              <Border Width="1" Height="12" Background="{DynamicResource SubtleBorderBrush}" />
+              <Button Classes="subtle" Padding="6,2" ToolTip.Tip="Click to toggle Windows (CRLF) / Unix (LF)" Click="OnToggleLineEndingClick">
+                <TextBlock x:Name="StatusLineEndingText" Text="Windows (CRLF)" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
+              </Button>
+              <Border Width="1" Height="12" Background="{DynamicResource SubtleBorderBrush}" />
+              <TextBlock Text="UTF-8" FontSize="11.5" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondary}" />
+            </StackPanel>
+          </Grid>
+        </Border>
+      </Grid>
+
+      <!-- ================================================================= -->
+      <!-- VIEW B: FLUENT COLLAPSIBLE NAVIGATIONVIEW SETTINGS                -->
+      <!-- Seamlessly shares TabRailBg with Titlebar on Left Pane!           -->
+      <!-- ================================================================= -->
+      <Grid x:Name="SettingsWorkspaceScroll"
+            IsVisible="False"
+            Background="{DynamicResource TabRailBg}"
+            ColumnDefinitions="Auto,*">
+
+        <!-- LEFT COLLAPSIBLE PANE (Seamlessly fused with Row 0 Titlebar!) -->
+        <Border x:Name="SettingsNavPane"
+                Grid.Column="0"
+                Width="232"
+                Padding="6,4,6,10"
+                Background="Transparent">
+          <Grid RowDefinitions="Auto,6,*,Auto,Auto">
+
+            <!-- Collapsible Hamburger Button + Settings Pane Header -->
+            <Grid Grid.Row="0" ColumnDefinitions="40,*" Height="36">
+              <Button x:Name="ToggleSettingsPaneBtn"
+                      Grid.Column="0"
+                      Classes="cmdBarIcon"
+                      Width="36"
+                      Height="32"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      ToolTip.Tip="Collapse navigation pane"
+                      Click="OnToggleSettingsPaneClick">
+                <PathIcon Data="{StaticResource IconHamburger}" Width="15" Height="15" Foreground="{DynamicResource TextPrimary}" />
+              </Button>
+              <TextBlock x:Name="SettingsPaneHeaderText"
+                         Grid.Column="1"
+                         Text="Settings"
+                         FontSize="13.5"
+                         FontWeight="SemiBold"
+                         VerticalAlignment="Center"
+                         Margin="8,0,0,0"
+                         Foreground="{DynamicResource TextPrimary}" />
+            </Grid>
+
+            <!-- Primary Navigation Sections (App mode, Accent, Pad color, Security) -->
+            <StackPanel Grid.Row="2" Spacing="3">
+
+              <!-- 1. App mode -->
+              <Button x:Name="NavAppModeBtn"
+                      Classes="settingsNavItem selected"
+                      ToolTip.Tip="App mode"
+                      Click="OnSettingsNavAppModeClick">
+                <Grid ColumnDefinitions="40,*" Height="36">
+                  <Border x:Name="NavAppModeIndicator"
+                          Grid.Column="0"
+                          Width="3"
+                          Height="16"
+                          CornerRadius="1.5"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Center"
+                          Margin="2,0,0,0"
+                          Background="{DynamicResource AccentPrimary}" />
+                  <PathIcon Grid.Column="0"
+                            Data="{StaticResource IconTheme}"
+                            Width="16"
+                            Height="16"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource TextPrimary}" />
+                  <TextBlock x:Name="NavAppModeLabel"
+                             Grid.Column="1"
+                             Text="App mode"
+                             FontSize="13"
+                             VerticalAlignment="Center"
+                             Margin="8,0,10,0"
+                             Foreground="{DynamicResource TextPrimary}" />
+                </Grid>
+              </Button>
+
+              <!-- 2. Accent -->
+              <Button x:Name="NavAccentBtn"
+                      Classes="settingsNavItem"
+                      ToolTip.Tip="Accent"
+                      Click="OnSettingsNavAccentClick">
+                <Grid ColumnDefinitions="40,*" Height="36">
+                  <Border x:Name="NavAccentIndicator"
+                          Grid.Column="0"
+                          Width="3"
+                          Height="16"
+                          CornerRadius="1.5"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Center"
+                          Margin="2,0,0,0"
+                          IsVisible="False"
+                          Background="{DynamicResource AccentPrimary}" />
+                  <PathIcon Grid.Column="0"
+                            Data="{StaticResource IconPalette}"
+                            Width="16"
+                            Height="16"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource TextPrimary}" />
+                  <TextBlock x:Name="NavAccentLabel"
+                             Grid.Column="1"
+                             Text="Accent"
+                             FontSize="13"
+                             VerticalAlignment="Center"
+                             Margin="8,0,10,0"
+                             Foreground="{DynamicResource TextPrimary}" />
+                </Grid>
+              </Button>
+
+              <!-- 3. Pad color -->
+              <Button x:Name="NavPadColorBtn"
+                      Classes="settingsNavItem"
+                      ToolTip.Tip="Pad color"
+                      Click="OnSettingsNavPadColorClick">
+                <Grid ColumnDefinitions="40,*" Height="36">
+                  <Border x:Name="NavPadColorIndicator"
+                          Grid.Column="0"
+                          Width="3"
+                          Height="16"
+                          CornerRadius="1.5"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Center"
+                          Margin="2,0,0,0"
+                          IsVisible="False"
+                          Background="{DynamicResource AccentPrimary}" />
+                  <PathIcon Grid.Column="0"
+                            Data="{StaticResource IconPadSheet}"
+                            Width="16"
+                            Height="16"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource TextPrimary}" />
+                  <TextBlock x:Name="NavPadColorLabel"
+                             Grid.Column="1"
+                             Text="Pad color"
+                             FontSize="13"
+                             VerticalAlignment="Center"
+                             Margin="8,0,10,0"
+                             Foreground="{DynamicResource TextPrimary}" />
+                </Grid>
+              </Button>
+
+              <!-- 4. Security -->
+              <Button x:Name="NavSecurityBtn"
+                      Classes="settingsNavItem"
+                      ToolTip.Tip="Security"
+                      Click="OnSettingsNavSecurityClick">
+                <Grid ColumnDefinitions="40,*" Height="36">
+                  <Border x:Name="NavSecurityIndicator"
+                          Grid.Column="0"
+                          Width="3"
+                          Height="16"
+                          CornerRadius="1.5"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Center"
+                          Margin="2,0,0,0"
+                          IsVisible="False"
+                          Background="{DynamicResource AccentPrimary}" />
+                  <PathIcon Grid.Column="0"
+                            Data="{StaticResource IconKey}"
+                            Width="16"
+                            Height="16"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource TextPrimary}" />
+                  <TextBlock x:Name="NavSecurityLabel"
+                             Grid.Column="1"
+                             Text="Security"
+                             FontSize="13"
+                             VerticalAlignment="Center"
+                             Margin="8,0,10,0"
+                             Foreground="{DynamicResource TextPrimary}" />
+                </Grid>
+              </Button>
+            </StackPanel>
+
+            <!-- Footer Divider -->
+            <Border Grid.Row="3"
+                    Height="1"
+                    Margin="6,8"
+                    Background="{DynamicResource SubtleBorderBrush}" />
+
+            <!-- 5. About (Bottom-docked on Left Collapsible Pane) -->
+            <Button x:Name="NavAboutBtn"
+                    Grid.Row="4"
+                    Classes="settingsNavItem"
+                    ToolTip.Tip="About"
+                    Click="OnSettingsNavAboutClick">
+              <Grid ColumnDefinitions="40,*" Height="36">
+                <Border x:Name="NavAboutIndicator"
+                        Grid.Column="0"
+                        Width="3"
+                        Height="16"
+                        CornerRadius="1.5"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Margin="2,0,0,0"
+                        IsVisible="False"
+                        Background="{DynamicResource AccentPrimary}" />
+                <PathIcon Grid.Column="0"
+                          Data="{StaticResource IconInfo}"
+                          Width="16"
+                          Height="16"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          Foreground="{DynamicResource TextPrimary}" />
+                <TextBlock x:Name="NavAboutLabel"
+                           Grid.Column="1"
+                           Text="About"
+                           FontSize="13"
+                           VerticalAlignment="Center"
+                           Margin="8,0,10,0"
+                           Foreground="{DynamicResource TextPrimary}" />
+              </Grid>
+            </Button>
+
+          </Grid>
+        </Border>
+
+        <!-- RIGHT SETTINGS CONTENT SURFACE (Curved 8px top-left seam against Titlebar + Left Pane) -->
+        <Grid Grid.Column="1">
+          <Border CornerRadius="8,0,0,0"
+                  ClipToBounds="True"
+                  Background="{DynamicResource TabActiveBg}">
+            <ScrollViewer x:Name="SettingsContentScroller" VerticalScrollBarVisibility="Auto">
+              <StackPanel MaxWidth="820" Margin="34,26,34,40" Spacing="16">
+
+                <!-- ========================================================= -->
+                <!-- PAGE 1: APP MODE                                          -->
+                <!-- ========================================================= -->
+                <StackPanel x:Name="SettingsPageAppMode" Spacing="16">
+                  <StackPanel Spacing="4">
+                    <TextBlock Text="App mode"
+                               FontSize="24"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimary}" />
+                    <TextBlock Text="Choose Dark, Light, or Sync automatically with your Windows 11 system theme."
+                               FontSize="12.5"
+                               Foreground="{DynamicResource TextSecondary}" />
+                  </StackPanel>
+
+                  <Border CornerRadius="8"
+                          Padding="18,16"
+                          Background="{DynamicResource CardBg}"
+                          BorderBrush="{DynamicResource CardBorderBrush}"
+                          BorderThickness="1">
+                    <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+                      <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="{DynamicResource AccentSubtleBg}" Margin="0,0,14,0">
+                        <PathIcon Data="{StaticResource IconTheme}" Width="18" Height="18" Foreground="{DynamicResource AccentPrimary}" />
+                      </Border>
+                      <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="Application theme" FontSize="14.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+                        <TextBlock Text="Controls window Acrylic translucency, menus, and UI surfaces" FontSize="12" Foreground="{DynamicResource TextSecondary}" />
+                      </StackPanel>
+                      <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                        <Button x:Name="ModeDarkBtn" Classes="choiceCard" Padding="14,7" Content="Dark" Click="OnAppModeDarkClick" />
+                        <Button x:Name="ModeLightBtn" Classes="choiceCard" Padding="14,7" Content="Light" Click="OnAppModeLightClick" />
+                        <Button x:Name="ModeSyncBtn" Classes="choiceCard" Padding="14,7" Content="Sync" Click="OnAppModeSyncClick" />
+                      </StackPanel>
+                    </Grid>
+                  </Border>
+                </StackPanel>
+
+                <!-- ========================================================= -->
+                <!-- PAGE 2: ACCENT                                            -->
+                <!-- ========================================================= -->
+                <StackPanel x:Name="SettingsPageAccent" IsVisible="False" Spacing="16">
+                  <StackPanel Spacing="4">
+                    <TextBlock Text="Accent"
+                               FontSize="24"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimary}" />
+                    <TextBlock Text="Sync to your current Windows accent color, or pick a curated Fluent palette."
+                               FontSize="12.5"
+                               Foreground="{DynamicResource TextSecondary}" />
+                  </StackPanel>
+
+                  <Border CornerRadius="8"
+                          Padding="18,16"
+                          Background="{DynamicResource CardBg}"
+                          BorderBrush="{DynamicResource CardBorderBrush}"
+                          BorderThickness="1">
+                    <StackPanel Spacing="14">
+                      <Grid ColumnDefinitions="Auto,*">
+                        <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="{DynamicResource AccentSubtleBg}" Margin="0,0,14,0">
+                          <PathIcon Data="{StaticResource IconPalette}" Width="18" Height="18" Foreground="{DynamicResource AccentPrimary}" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                          <TextBlock Text="Accent color" FontSize="14.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+                          <TextBlock Text="Highlights active indicators, caret, Secure toggle, and Accent pad tint" FontSize="12" Foreground="{DynamicResource TextSecondary}" />
+                        </StackPanel>
+                      </Grid>
+
+                      <WrapPanel Orientation="Horizontal" ItemWidth="126">
+                        <Button x:Name="AccentSyncBtn" Classes="choiceCard" Margin="0,0,8,8" Click="OnAccentSyncClick">
+                          <StackPanel Orientation="Horizontal" Spacing="9" VerticalAlignment="Center">
+                            <Border x:Name="SyncAccentSwatchDot" Width="18" Height="18" CornerRadius="9" Background="#0078D4" BorderBrush="#33FFFFFF" BorderThickness="1" />
+                            <TextBlock Text="Sync" FontSize="12.5" VerticalAlignment="Center" />
+                          </StackPanel>
+                        </Button>
+
+                        <Button x:Name="AccentRedBtn" Classes="choiceCard" Margin="0,0,8,8" Click="OnAccentRedClick">
+                          <StackPanel Orientation="Horizontal" Spacing="9" VerticalAlignment="Center">
+                            <Border Width="18" Height="18" CornerRadius="9" Background="#D83B3F" />
+                            <TextBlock Text="Red" FontSize="12.5" VerticalAlignment="Center" />
+                          </StackPanel>
+                        </Button>
+
+                        <Button x:Name="AccentPurpleBtn" Classes="choiceCard" Margin="0,0,8,8" Click="OnAccentPurpleClick">
+                          <StackPanel Orientation="Horizontal" Spacing="9" VerticalAlignment="Center">
+                            <Border Width="18" Height="18" CornerRadius="9" Background="#845EF7" />
+                            <TextBlock Text="Purple" FontSize="12.5" VerticalAlignment="Center" />
+                          </StackPanel>
+                        </Button>
+
+                        <Button x:Name="AccentMatchaBtn" Classes="choiceCard" Margin="0,0,8,8" Click="OnAccentMatchaClick">
+                          <StackPanel Orientation="Horizontal" Spacing="9" VerticalAlignment="Center">
+                            <Border Width="18" Height="18" CornerRadius="9" Background="#6BA353" />
+                            <TextBlock Text="Matcha" FontSize="12.5" VerticalAlignment="Center" />
+                          </StackPanel>
+                        </Button>
+
+                        <Button x:Name="AccentBeigeBtn" Classes="choiceCard" Margin="0,0,8,8" Click="OnAccentBeigeClick">
+                          <StackPanel Orientation="Horizontal" Spacing="9" VerticalAlignment="Center">
+                            <Border Width="18" Height="18" CornerRadius="9" Background="#C2A378" />
+                            <TextBlock Text="Beige" FontSize="12.5" VerticalAlignment="Center" />
+                          </StackPanel>
+                        </Button>
+
+                        <Button x:Name="AccentOrangeBtn" Classes="choiceCard" Margin="0,0,8,8" Click="OnAccentOrangeClick">
+                          <StackPanel Orientation="Horizontal" Spacing="9" VerticalAlignment="Center">
+                            <Border Width="18" Height="18" CornerRadius="9" Background="#E86A17" />
+                            <TextBlock Text="Orange" FontSize="12.5" VerticalAlignment="Center" />
+                          </StackPanel>
+                        </Button>
+                      </WrapPanel>
+                    </StackPanel>
+                  </Border>
+                </StackPanel>
+
+                <!-- ========================================================= -->
+                <!-- PAGE 3: PAD COLOR                                         -->
+                <!-- ========================================================= -->
+                <StackPanel x:Name="SettingsPagePadColor" IsVisible="False" Spacing="16">
+                  <StackPanel Spacing="4">
+                    <TextBlock Text="Pad color"
+                               FontSize="24"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimary}" />
+                    <TextBlock Text="Customize the notepad writing sheet surface and editor typography."
+                               FontSize="12.5"
+                               Foreground="{DynamicResource TextSecondary}" />
+                  </StackPanel>
+
+                  <Border CornerRadius="8"
+                          Padding="18,16"
+                          Background="{DynamicResource CardBg}"
+                          BorderBrush="{DynamicResource CardBorderBrush}"
+                          BorderThickness="1">
+                    <StackPanel Spacing="14">
+                      <Grid ColumnDefinitions="Auto,*">
+                        <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="{DynamicResource AccentSubtleBg}" Margin="0,0,14,0">
+                          <PathIcon Data="{StaticResource IconPadSheet}" Width="18" Height="18" Foreground="{DynamicResource AccentPrimary}" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                          <TextBlock Text="Writing pad surface" FontSize="14.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+                          <TextBlock Text="Choose Accent-tinted, classic Yellow legal pad, or crisp White" FontSize="12" Foreground="{DynamicResource TextSecondary}" />
+                        </StackPanel>
+                      </Grid>
+
+                      <Grid ColumnDefinitions="*,10,*,10,*">
+                        <Button x:Name="PadAccentBtn" Grid.Column="0" Classes="choiceCard" Click="OnPadAccentClick">
+                          <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                            <Border Width="26" Height="22" CornerRadius="5" Background="{DynamicResource AccentSubtleBg}" BorderBrush="{DynamicResource AccentPrimary}" BorderThickness="1.5" />
+                            <StackPanel Spacing="1">
+                              <TextBlock Text="Accent" FontSize="13" FontWeight="SemiBold" />
+                              <TextBlock Text="Follows selected Accent" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
+                            </StackPanel>
+                          </StackPanel>
+                        </Button>
+
+                        <Button x:Name="PadYellowBtn" Grid.Column="2" Classes="choiceCard" Click="OnPadYellowClick">
+                          <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                            <Border Width="26" Height="22" CornerRadius="5" Background="#FFF6BF" BorderBrush="#D6B647" BorderThickness="1.5" />
+                            <StackPanel Spacing="1">
+                              <TextBlock Text="Yellow" FontSize="13" FontWeight="SemiBold" />
+                              <TextBlock Text="Warm legal notepad" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
+                            </StackPanel>
+                          </StackPanel>
+                        </Button>
+
+                        <Button x:Name="PadWhiteBtn" Grid.Column="4" Classes="choiceCard" Click="OnPadWhiteClick">
+                          <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                            <Border Width="26" Height="22" CornerRadius="5" Background="#FFFFFF" BorderBrush="#999999" BorderThickness="1.5" />
+                            <StackPanel Spacing="1">
+                              <TextBlock Text="White" FontSize="13" FontWeight="SemiBold" />
+                              <TextBlock Text="Standard clean sheet" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
+                            </StackPanel>
+                          </StackPanel>
+                        </Button>
+                      </Grid>
+
+                      <Border Height="1" Background="{DynamicResource SubtleBorderBrush}" />
+
+                      <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                        <StackPanel Grid.Column="0" Spacing="1">
+                          <TextBlock Text="Adapt pad surface in Dark mode" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" />
+                          <TextBlock Text="Softens pad brightness in Dark mode while preserving Accent / Yellow / Neutral character (turn off for bright paper)" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
+                        </StackPanel>
+                        <ToggleSwitch x:Name="AdaptDarkPadSwitch"
+                                      Grid.Column="1"
+                                      OnContent="On"
+                                      OffContent="Off"
+                                      IsCheckedChanged="OnAdaptDarkPadToggled" />
+                      </Grid>
+
+                      <Border Height="1" Background="{DynamicResource SubtleBorderBrush}" />
+
+                      <Grid ColumnDefinitions="*,10,Auto,10,Auto" VerticalAlignment="Center">
+                        <StackPanel Grid.Column="0" Spacing="1">
+                          <TextBlock Text="Editor font &amp; size" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" />
+                          <TextBlock Text="Choose proportional Fluent text or monospaced code typography" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
+                        </StackPanel>
+                        <ComboBox x:Name="FontFamilyCombo" Grid.Column="2" Width="248" SelectionChanged="OnFontFamilySelectionChanged">
+                          <ComboBoxItem Content="Segoe UI Variable (Default)" Tag="Segoe UI Variable Text, Segoe UI, Noto Sans, sans-serif" />
+                          <ComboBoxItem Content="Cascadia Mono / Consolas" Tag="Cascadia Mono, Consolas, Noto Sans Mono, monospace" />
+                          <ComboBoxItem Content="Calibri / Clean Sans" Tag="Calibri, Noto Sans, sans-serif" />
+                          <ComboBoxItem Content="Georgia / Classic Serif" Tag="Georgia, Cambria, Noto Serif, serif" />
+                        </ComboBox>
+                        <ComboBox x:Name="FontSizeCombo" Grid.Column="4" Width="90" SelectionChanged="OnFontSizeSelectionChanged">
+                          <ComboBoxItem Content="12 pt" Tag="12" />
+                          <ComboBoxItem Content="14 pt" Tag="14" />
+                          <ComboBoxItem Content="15 pt" Tag="15" />
+                          <ComboBoxItem Content="17 pt" Tag="17" />
+                          <ComboBoxItem Content="20 pt" Tag="20" />
+                          <ComboBoxItem Content="24 pt" Tag="24" />
+                        </ComboBox>
+                      </Grid>
+                    </StackPanel>
+                  </Border>
+                </StackPanel>
+
+                <!-- ========================================================= -->
+                <!-- PAGE 4: SECURITY                                          -->
+                <!-- ========================================================= -->
+                <StackPanel x:Name="SettingsPageSecurity" IsVisible="False" Spacing="16">
+                  <StackPanel Spacing="4">
+                    <TextBlock Text="Security"
+                               FontSize="24"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimary}" />
+                    <TextBlock Text="Manage AES-256-GCM Secure (.kwnote) save behavior, Master Password vault, and file association."
+                               FontSize="12.5"
+                               Foreground="{DynamicResource TextSecondary}" />
+                  </StackPanel>
+
+                  <Border CornerRadius="8"
+                          Padding="18,16"
+                          Background="{DynamicResource CardBg}"
+                          BorderBrush="{DynamicResource CardBorderBrush}"
+                          BorderThickness="1">
+                    <StackPanel Spacing="14">
+                      <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+                        <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="{DynamicResource AccentSubtleBg}" Margin="0,0,14,0">
+                          <PathIcon Data="{StaticResource IconKey}" Width="18" Height="18" Foreground="{DynamicResource AccentPrimary}" />
+                        </Border>
+                        <StackPanel Grid.Column="1" Spacing="2">
+                          <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="Master Password &amp; Secure Save Policy" FontSize="14.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+                            <Border x:Name="MasterStatusBadge" CornerRadius="10" Padding="8,2" Background="{DynamicResource AccentSubtleBg}">
+                              <TextBlock x:Name="MasterStatusBadgeText" Text="Not Configured" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource AccentPrimary}" />
+                            </Border>
+                          </StackPanel>
+                          <TextBlock Text="Set a default Master Password (protected via Windows DPAPI) or ask to create a password every time you save a Secure file" FontSize="12" Foreground="{DynamicResource TextSecondary}" />
+                        </StackPanel>
+                      </Grid>
+
+                      <Grid ColumnDefinitions="*,10,*">
+                        <Button x:Name="PolicyUseMasterBtn" Grid.Column="0" Classes="choiceCard" Click="OnPolicyUseMasterClick">
+                          <StackPanel Spacing="3">
+                            <TextBlock Text="Use Master Password by default" FontSize="13" FontWeight="SemiBold" />
+                            <TextBlock Text="Encrypt Secure (.kwnote) files with your Master Password, or optionally pick a unique password per file."
+                                       FontSize="11.5"
+                                       TextWrapping="Wrap"
+                                       Foreground="{DynamicResource TextSecondary}" />
+                          </StackPanel>
+                        </Button>
+
+                        <Button x:Name="PolicyAskEveryTimeBtn" Grid.Column="2" Classes="choiceCard" Click="OnPolicyAskEveryTimeClick">
+                          <StackPanel Spacing="3">
+                            <TextBlock Text="Ask to make a password every time" FontSize="13" FontWeight="SemiBold" />
+                            <TextBlock Text="Always prompt to create a fresh password every single time you save a Secure (.kwnote) text file."
+                                       FontSize="11.5"
+                                       TextWrapping="Wrap"
+                                       Foreground="{DynamicResource TextSecondary}" />
+                          </StackPanel>
+                        </Button>
+                      </Grid>
+
+                      <Border Height="1" Background="{DynamicResource SubtleBorderBrush}" />
+
+                      <Grid ColumnDefinitions="*,10,Auto" VerticalAlignment="Center">
+                        <StackPanel Grid.Column="0" Spacing="2">
+                          <TextBlock x:Name="MasterPasswordDetailTitle" Text="Master Password" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" />
+                          <TextBlock x:Name="MasterPasswordDetailSub" Text="No Master Password set yet. Saving a Secure file will prompt you to create a password." FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                          <Button x:Name="SetOrChangeMasterBtn" Classes="accent" Content="Set Master Password" Click="OnConfigureMasterPasswordClick" />
+                          <Button x:Name="RemoveMasterBtn" Classes="secondary" Content="Remove" IsVisible="False" Click="OnRemoveMasterPasswordClick" />
+                        </StackPanel>
+                      </Grid>
+
+                      <Border Height="1" Background="{DynamicResource SubtleBorderBrush}" />
+
+                      <Grid ColumnDefinitions="*,10,Auto" VerticalAlignment="Center">
+                        <StackPanel Grid.Column="0" Spacing="2">
+                          <TextBlock Text="Windows Explorer .kwnote File Association" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" />
+                          <TextBlock x:Name="AssocStatusText" Text="Register .kwnote in Windows so double-clicking opens directly in KnightWin Notes with its custom icon." FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
+                        </StackPanel>
+                        <Button Grid.Column="2" Classes="secondary" Content="Register .kwnote" Click="OnRegisterFileAssocClick" />
+                      </Grid>
+                    </StackPanel>
+                  </Border>
+                </StackPanel>
+
+                <!-- ========================================================= -->
+                <!-- PAGE 5: ABOUT (Version badge without "Fluent Edition")    -->
+                <!-- ========================================================= -->
+                <StackPanel x:Name="SettingsPageAbout" IsVisible="False" Spacing="16">
+                  <StackPanel Spacing="4">
+                    <TextBlock Text="About"
+                               FontSize="24"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimary}" />
+                    <TextBlock Text="Application information, cryptographic specification, and runtime details."
+                               FontSize="12.5"
+                               Foreground="{DynamicResource TextSecondary}" />
+                  </StackPanel>
+
+                  <Border CornerRadius="8"
+                          Padding="20,18"
+                          Background="{DynamicResource CardBg}"
+                          BorderBrush="{DynamicResource CardBorderBrush}"
+                          BorderThickness="1">
+                    <Grid ColumnDefinitions="Auto,18,*">
+                      <Button x:Name="AboutLogoGitHubBtn"
+                              Grid.Column="0"
+                              Classes="subtle"
+                              Padding="4"
+                              CornerRadius="12"
+                              VerticalAlignment="Top"
+                              Cursor="Hand"
+                              ToolTip.Tip="Visit KnightWin Notes on GitHub (https://github.com/iamkrisstan2000/KnightWin-Notes)"
+                              Click="OnAboutLogoGitHubClick">
+                        <Image Source="avares://KnightWinNotes/Assets/KnightWinNotes.png"
+                               Width="72"
+                               Height="72"
+                               RenderOptions.BitmapInterpolationMode="HighQuality" />
+                      </Button>
+
+                      <StackPanel Grid.Column="2" Spacing="6">
+                        <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                          <TextBlock Text="KnightWin Notes" FontSize="19" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}" />
+                          <Border CornerRadius="10" Padding="9,2" Background="{DynamicResource AccentSubtleBg}">
+                            <TextBlock Text="v1.0.0" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource AccentPrimary}" />
+                          </Border>
+                        </StackPanel>
+
+                        <TextBlock Text="Precision-engineered FluentUI Notepad for Windows 11 with dual Plain (.txt) and Authenticated Encrypted (.kwnote) storage. Click the KnightWin logo to visit the official GitHub repository."
+                                   FontSize="12.5"
+                                   TextWrapping="Wrap"
+                                   Foreground="{DynamicResource TextSecondary}" />
+
+                        <Border Margin="0,4,0,2"
+                                Padding="12,10"
+                                CornerRadius="6"
+                                Background="{DynamicResource WindowChromeBg}"
+                                BorderBrush="{DynamicResource SubtleBorderBrush}"
+                                BorderThickness="1">
+                          <StackPanel Spacing="4">
+                            <TextBlock Text="Architecture  •  100% Native Compiled .NET 8 + Skia/Win32 DWM Interop (Zero Electron / Zero Chromium)"
+                                       FontSize="12"
+                                       TextWrapping="Wrap"
+                                       Foreground="{DynamicResource TextPrimary}" />
+                            <TextBlock Text="File Cipher   •  AES-256-GCM (128-bit Auth Tag, AAD-bound KWNOTE v1 binary header, fresh CSPRNG Nonce per save)"
+                                       FontSize="12"
+                                       TextWrapping="Wrap"
+                                       Foreground="{DynamicResource TextSecondary}" />
+                            <TextBlock Text="Key Derivation •  PBKDF2-HMAC-SHA512 (600,000 iterations, 256-bit CSPRNG Salt) + Windows DPAPI Master Key Vault"
+                                       FontSize="12"
+                                       TextWrapping="Wrap"
+                                       Foreground="{DynamicResource TextSecondary}" />
+                            <TextBlock Text="Privacy       •  100% Offline — Zero network connections, zero telemetry, zero cloud sync"
+                                       FontSize="12"
+                                       TextWrapping="Wrap"
+                                       Foreground="{DynamicResource TextSecondary}" />
+                            <TextBlock Text="Created by KnightWin  •  Licensed under GNU General Public License v3.0 (GPL-3.0)"
+                                       FontSize="11.5"
+                                       Margin="0,3,0,0"
+                                       Foreground="{DynamicResource TextMuted}" />
+                          </StackPanel>
+                        </Border>
+                      </StackPanel>
+                    </Grid>
+                  </Border>
+                </StackPanel>
+
+              </StackPanel>
+            </ScrollViewer>
+          </Border>
+
+          <!-- Crisp Unmasked 1px Curved Seam Separating Titlebar + Left Collapsible Pane from Right Settings Surface -->
+          <Border CornerRadius="8,0,0,0"
+                  BorderBrush="{DynamicResource TitleBarSeamBrush}"
+                  BorderThickness="1,1,0,0"
+                  IsHitTestVisible="False" />
+        </Grid>
+      </Grid>
+
+      <!-- ================================================================= -->
+      <!-- MODAL FLUENT DIALOG HOST OVERLAY                                  -->
+      <!-- ================================================================= -->
+      <Border x:Name="ModalOverlay"
+              IsVisible="False"
+              Background="{DynamicResource DialogOverlayBg}">
+        <Grid>
+
+          <!-- DIALOG 1: CHOOSE SAVE MODE (PLAIN .TXT vs SECURE .KWNOTE) -->
+          <Border x:Name="SaveModeDialogCard"
+                  IsVisible="False"
+                  Width="500"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  CornerRadius="12"
+                  Padding="24,22"
+                  Background="{DynamicResource DialogSurfaceBg}"
+                  BorderBrush="{DynamicResource CardBorderBrush}"
+                  BorderThickness="1"
+                  BoxShadow="0 18 48 0 #55000000">
+            <StackPanel Spacing="16">
+              <StackPanel Spacing="4">
+                <TextBlock Text="How would you like to save this note?"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimary}" />
+                <TextBlock Text="Choose standard Plain text or KnightWin's encrypted Secure container."
+                           FontSize="12.5"
+                           Foreground="{DynamicResource TextSecondary}" />
+              </StackPanel>
+
+              <StackPanel Spacing="10">
+                <!-- Option 1: Plain (.txt) -->
+                <Button Classes="choiceCard" Padding="16,14" Click="OnDialogChoosePlainClick">
+                  <Grid ColumnDefinitions="Auto,14,*">
+                    <Border Grid.Column="0" Width="42" Height="42" CornerRadius="8" Background="{DynamicResource WindowChromeBg}">
+                      <PathIcon Data="{StaticResource IconDocumentPlain}" Width="20" Height="20" Foreground="{DynamicResource TextPrimary}" />
+                    </Border>
+                    <StackPanel Grid.Column="2" Spacing="3" VerticalAlignment="Center">
+                      <TextBlock Text="Plain  (.txt)" FontSize="14.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+                      <TextBlock Text="Saves as a standard UTF-8 .txt file — just like Windows Notepad. Opens in any text editor."
+                                 FontSize="12"
+                                 TextWrapping="Wrap"
+                                 Foreground="{DynamicResource TextSecondary}" />
+                    </StackPanel>
+                  </Grid>
+                </Button>
+
+                <!-- Option 2: Secure (.kwnote) -->
+                <Button Classes="choiceCard selected" Padding="16,14" Click="OnDialogChooseSecureClick">
+                  <Grid ColumnDefinitions="Auto,14,*">
+                    <Border Grid.Column="0" Width="42" Height="42" CornerRadius="8" Background="{DynamicResource AccentPrimary}">
+                      <PathIcon Data="{StaticResource IconShieldLock}" Width="20" Height="20" Foreground="{DynamicResource AccentOnFillText}" />
+                    </Border>
+                    <StackPanel Grid.Column="2" Spacing="3" VerticalAlignment="Center">
+                      <TextBlock Text="Secure  (.kwnote)" FontSize="14.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+                      <TextBlock Text="Encrypts with AES-256-GCM into a custom .kwnote file that ONLY KnightWin Notes can decrypt with your password."
+                                 FontSize="12"
+                                 TextWrapping="Wrap"
+                                 Foreground="{DynamicResource TextSecondary}" />
+                    </StackPanel>
+                  </Grid>
+                </Button>
+              </StackPanel>
+
+              <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                <Button Classes="secondary" Content="Cancel" Click="OnCancelModalClick" />
+              </StackPanel>
+            </StackPanel>
+          </Border>
+
+          <!-- DIALOG 2: SECURE SAVE PASSWORD CONFIGURATION -->
+          <Border x:Name="SecureSavePasswordCard"
+                  IsVisible="False"
+                  Width="480"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  CornerRadius="12"
+                  Padding="24,22"
+                  Background="{DynamicResource DialogSurfaceBg}"
+                  BorderBrush="{DynamicResource CardBorderBrush}"
+                  BorderThickness="1"
+                  BoxShadow="0 18 48 0 #55000000">
+            <StackPanel Spacing="14">
+              <Grid ColumnDefinitions="Auto,12,*">
+                <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="{DynamicResource AccentPrimary}" VerticalAlignment="Top">
+                  <PathIcon Data="{StaticResource IconShieldLock}" Width="17" Height="17" Foreground="{DynamicResource AccentOnFillText}" />
+                </Border>
+                <StackPanel Grid.Column="2" Spacing="2">
+                  <TextBlock Text="Protect Secure Note (.kwnote)" FontSize="17" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+                  <TextBlock x:Name="SecureSaveSubHeader"
+                             Text="Encrypt with AES-256-GCM before writing to disk"
+                             FontSize="12"
+                             TextWrapping="Wrap"
+                             Foreground="{DynamicResource TextSecondary}" />
+                </StackPanel>
+              </Grid>
+
+              <!-- Shown when Master Password exists & policy allows choosing Master vs Custom -->
+              <StackPanel x:Name="SecureMasterChoicePanel" Spacing="8" IsVisible="False">
+                <RadioButton x:Name="UseMasterPwRadio"
+                             GroupName="SecSaveMode"
+                             IsChecked="True"
+                             Checked="OnSecureSaveModeRadioChanged"
+                             Content="Encrypt with my default Master Password (from Settings)" />
+                <RadioButton x:Name="UseCustomPwRadio"
+                             GroupName="SecSaveMode"
+                             Checked="OnSecureSaveModeRadioChanged"
+                             Content="Create a different password for this specific file" />
+              </StackPanel>
+
+              <!-- Custom Password Entry Fields -->
+              <StackPanel x:Name="SecureCustomPasswordFields" Spacing="10">
+                <Grid ColumnDefinitions="*,6,Auto">
+                  <TextBox x:Name="SecureNewPwBox"
+                           Grid.Column="0"
+                           PasswordChar="●"
+                           Watermark="Enter password for this .kwnote file"
+                           TextChanged="OnSecureNewPwTextChanged" />
+                  <ToggleButton x:Name="RevealSecurePwToggle"
+                                Grid.Column="2"
+                                Width="36"
+                                Height="32"
+                                ToolTip.Tip="Show / Hide Password"
+                                IsCheckedChanged="OnRevealSecurePwToggled">
+                    <PathIcon Data="{StaticResource IconEye}" Width="15" Height="15" />
+                  </ToggleButton>
+                </Grid>
+
+                <TextBox x:Name="SecureConfirmPwBox"
+                         PasswordChar="●"
+                         Watermark="Confirm password"
+                         KeyDown="OnSecureConfirmKeyDown" />
+
+                <!-- Password Strength Indicator -->
+                <StackPanel Spacing="4">
+                  <ProgressBar x:Name="SecurePwStrengthBar" Minimum="0" Maximum="4" Value="0" Height="5" CornerRadius="3" />
+                  <TextBlock x:Name="SecurePwStrengthText" Text="Enter a password" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
+                </StackPanel>
+              </StackPanel>
+
+              <TextBlock x:Name="SecureSaveErrorText"
+                         Text=""
+                         IsVisible="False"
+                         FontSize="12"
+                         Foreground="#E55353"
+                         TextWrapping="Wrap" />
+
+              <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,4,0,0">
+                <Button Classes="secondary" Content="Cancel" Click="OnCancelModalClick" />
+                <Button Classes="accent" Content="Encrypt &amp; Choose Location..." Click="OnConfirmSecureSavePasswordClick" />
+              </StackPanel>
+            </StackPanel>
+          </Border>
+
+          <!-- DIALOG 3: UNLOCK .KWNOTE FILE -->
+          <Border x:Name="UnlockNoteDialogCard"
+                  IsVisible="False"
+                  Width="445"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  CornerRadius="12"
+                  Padding="24,22"
+                  Background="{DynamicResource DialogSurfaceBg}"
+                  BorderBrush="{DynamicResource CardBorderBrush}"
+                  BorderThickness="1"
+                  BoxShadow="0 18 48 0 #55000000">
+            <StackPanel Spacing="14">
+              <StackPanel Orientation="Horizontal" Spacing="12">
+                <Image Source="avares://KnightWinNotes/Assets/KnightWinNotes.png" Width="38" Height="38" />
+                <StackPanel Spacing="2" VerticalAlignment="Center">
+                  <TextBlock Text="Unlock Secure Note" FontSize="17" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+                  <TextBlock x:Name="UnlockFileNameLabel" Text="secret.kwnote" FontSize="12" Foreground="{DynamicResource AccentPrimary}" TextTrimming="CharacterEllipsis" MaxWidth="330" />
+                </StackPanel>
+              </StackPanel>
+
+              <TextBlock Text="This .kwnote container is encrypted with AES-256-GCM. Enter its password (or your Master Password if used) to decrypt it in memory."
+                         FontSize="12"
+                         TextWrapping="Wrap"
+                         Foreground="{DynamicResource TextSecondary}" />
+
+              <Grid ColumnDefinitions="*,6,Auto">
+                <TextBox x:Name="UnlockPwBox"
+                         Grid.Column="0"
+                         PasswordChar="●"
+                         Watermark="Enter decryption password"
+                         KeyDown="OnUnlockPwKeyDown" />
+                <ToggleButton x:Name="RevealUnlockPwToggle"
+                              Grid.Column="2"
+                              Width="36"
+                              Height="32"
+                              ToolTip.Tip="Show / Hide Password"
+                              IsCheckedChanged="OnRevealUnlockPwToggled">
+                  <PathIcon Data="{StaticResource IconEye}" Width="15" Height="15" />
+                </ToggleButton>
+              </Grid>
+
+              <TextBlock x:Name="UnlockErrorText"
+                         Text=""
+                         IsVisible="False"
+                         FontSize="12"
+                         Foreground="#E55353"
+                         TextWrapping="Wrap" />
+
+              <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,4,0,0">
+                <Button Classes="secondary" Content="Cancel" Click="OnCancelModalClick" />
+                <Button Classes="accent" Content="Unlock &amp; Open" Click="OnConfirmUnlockNoteClick" />
+              </StackPanel>
+            </StackPanel>
+          </Border>
+
+          <!-- DIALOG 4: MASTER PASSWORD SETUP / CHANGE / REMOVE -->
+          <Border x:Name="MasterPwDialogCard"
+                  IsVisible="False"
+                  Width="460"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  CornerRadius="12"
+                  Padding="24,22"
+                  Background="{DynamicResource DialogSurfaceBg}"
+                  BorderBrush="{DynamicResource CardBorderBrush}"
+                  BorderThickness="1"
+                  BoxShadow="0 18 48 0 #55000000">
+            <StackPanel Spacing="12">
+              <TextBlock x:Name="MasterDialogTitle" Text="Set Master Password" FontSize="17" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+              <TextBlock x:Name="MasterDialogSubtitle"
+                         Text="Protected locally with Windows DPAPI + PBKDF2-HMAC-SHA512 (600,000 iterations)."
+                         FontSize="12"
+                         TextWrapping="Wrap"
+                         Foreground="{DynamicResource TextSecondary}" />
+
+              <TextBox x:Name="MasterCurrentPwBox"
+                       IsVisible="False"
+                       PasswordChar="●"
+                       Watermark="Current Master Password" />
+
+              <StackPanel x:Name="MasterNewPwPanel" Spacing="10">
+                <TextBox x:Name="MasterNewPwBox"
+                         PasswordChar="●"
+                         Watermark="New Master Password"
+                         TextChanged="OnMasterNewPwTextChanged" />
+                <TextBox x:Name="MasterConfirmPwBox"
+                         PasswordChar="●"
+                         Watermark="Confirm New Master Password" />
+                <StackPanel Spacing="4">
+                  <ProgressBar x:Name="MasterPwStrengthBar" Minimum="0" Maximum="4" Value="0" Height="5" CornerRadius="3" />
+                  <TextBlock x:Name="MasterPwStrengthText" Text="Enter a strong Master Password" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
+                </StackPanel>
+              </StackPanel>
+
+              <TextBlock x:Name="MasterDialogErrorText"
+                         Text=""
+                         IsVisible="False"
+                         FontSize="12"
+                         Foreground="#E55353"
+                         TextWrapping="Wrap" />
+
+              <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,4,0,0">
+                <Button Classes="secondary" Content="Cancel" Click="OnCancelModalClick" />
+                <Button x:Name="MasterDialogSubmitBtn" Classes="accent" Content="Save Master Password" Click="OnSubmitMasterPwDialogClick" />
+              </StackPanel>
+            </StackPanel>
+          </Border>
+
+          <!-- DIALOG 5: GO TO LINE (CTRL+G) -->
+          <Border x:Name="GoToLineDialogCard"
+                  IsVisible="False"
+                  Width="360"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  CornerRadius="12"
+                  Padding="22,20"
+                  Background="{DynamicResource DialogSurfaceBg}"
+                  BorderBrush="{DynamicResource CardBorderBrush}"
+                  BorderThickness="1"
+                  BoxShadow="0 18 48 0 #55000000">
+            <StackPanel Spacing="12">
+              <TextBlock Text="Go to line" FontSize="16.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+              <TextBlock x:Name="GoToLineHintLabel" Text="Line number (1 - 1):" FontSize="12" Foreground="{DynamicResource TextSecondary}" />
+              <TextBox x:Name="GoToLineInputBox" Watermark="Line number" KeyDown="OnGoToLineKeyDown" />
+              <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                <Button Classes="secondary" Content="Cancel" Click="OnCancelModalClick" />
+                <Button Classes="accent" Content="Go to" Click="OnConfirmGoToLineClick" />
+              </StackPanel>
+            </StackPanel>
+          </Border>
+
+          <!-- DIALOG 6: UNSAVED CHANGES PROMPT -->
+          <Border x:Name="UnsavedDialogCard"
+                  IsVisible="False"
+                  Width="450"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  CornerRadius="12"
+                  Padding="24,22"
+                  Background="{DynamicResource DialogSurfaceBg}"
+                  BorderBrush="{DynamicResource CardBorderBrush}"
+                  BorderThickness="1"
+                  BoxShadow="0 18 48 0 #55000000">
+            <StackPanel Spacing="16">
+              <TextBlock Text="KnightWin Notes" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource AccentPrimary}" />
+              <TextBlock x:Name="UnsavedPromptText"
+                         Text="Do you want to save changes to Untitled?"
+                         FontSize="16"
+                         FontWeight="SemiBold"
+                         TextWrapping="Wrap"
+                         Foreground="{DynamicResource TextPrimary}" />
+              <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                <Button Classes="accent" Content="Save" Click="OnUnsavedSaveClick" />
+                <Button Classes="secondary" Content="Don't save" Click="OnUnsavedDiscardClick" />
+                <Button Classes="subtle" Content="Cancel" Click="OnCancelModalClick" />
+              </StackPanel>
+            </StackPanel>
+          </Border>
+
+        </Grid>
+      </Border>
+
+      <!-- Subtle Fluent Toast Notification Pill -->
+      <Border x:Name="ToastBanner"
+              IsVisible="False"
+              HorizontalAlignment="Right"
+              VerticalAlignment="Bottom"
+              Margin="0,0,20,42"
+              CornerRadius="8"
+              Padding="14,9"
+              Background="{DynamicResource DialogSurfaceBg}"
+              BorderBrush="{DynamicResource AccentPrimary}"
+              BorderThickness="1.5"
+              BoxShadow="0 8 24 0 #38000000"
+              IsHitTestVisible="False">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <PathIcon Data="{StaticResource IconCheck}" Width="14" Height="14" Foreground="{DynamicResource AccentPrimary}" />
+          <TextBlock x:Name="ToastMessageText" Text="Saved" FontSize="12.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" />
+        </StackPanel>
+      </Border>
+
+    </Grid>
+  </Grid>
+</Window>

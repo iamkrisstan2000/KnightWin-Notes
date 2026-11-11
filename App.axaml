@@ -1,0 +1,378 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="KnightWinNotes.App">
+
+  <Application.Styles>
+    <FluentTheme />
+
+    <!-- Subtle Fluent Icon / Toolbar Button -->
+    <Style Selector="Button.subtle">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Padding" Value="8,5" />
+      <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style Selector="Button.subtle:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource TabHoverBg}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+    </Style>
+    <Style Selector="Button.subtle:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Opacity" Value="0.78" />
+    </Style>
+
+    <!-- Elevated Fluent Secondary Button -->
+    <Style Selector="Button.secondary">
+      <Setter Property="Background" Value="{DynamicResource CardBg}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource CardBorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Padding" Value="14,7" />
+      <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style Selector="Button.secondary:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource CardHoverBg}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentPrimary}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+    </Style>
+
+    <!-- Primary Fluent Accent Button -->
+    <Style Selector="Button.accent">
+      <Setter Property="Background" Value="{DynamicResource AccentPrimary}" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentOnFillText}" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Padding" Value="16,7" />
+      <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style Selector="Button.accent:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource AccentHover}" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentOnFillText}" />
+    </Style>
+    <Style Selector="Button.accent:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource AccentPressed}" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentOnFillText}" />
+    </Style>
+
+    <!-- Icon-Only Command Bar Secure Mode Toggle (Default Off = Unselected, On = Selected) -->
+    <Style Selector="Button.secureToggle">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Width" Value="28" />
+      <Setter Property="Height" Value="25" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style Selector="Button.secureToggle:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource CommandBarHoverBg}" />
+    </Style>
+    <Style Selector="Button.secureToggle:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource CommandBarActiveBg}" />
+      <Setter Property="Opacity" Value="0.86" />
+    </Style>
+
+    <Style Selector="Button.cmdBarIcon">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Width" Value="28" />
+      <Setter Property="Height" Value="25" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style Selector="Button.cmdBarIcon:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource CommandBarHoverBg}" />
+    </Style>
+    <Style Selector="Button.cmdBarIcon:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource CommandBarActiveBg}" />
+      <Setter Property="Opacity" Value="0.86" />
+    </Style>
+    <Style Selector="Button.secureToggle.selected">
+      <Setter Property="Background" Value="{DynamicResource AccentPrimary}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentPrimary}" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentOnFillText}" />
+    </Style>
+    <Style Selector="Button.secureToggle.selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource AccentHover}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentHover}" />
+    </Style>
+
+    <!-- Choice / Swatch Selectable Card Button -->
+    <Style Selector="Button.settingsNavItem">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Height" Value="36" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style Selector="Button.settingsNavItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource CommandBarHoverBg}" />
+    </Style>
+    <Style Selector="Button.settingsNavItem:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource CommandBarActiveBg}" />
+      <Setter Property="Opacity" Value="0.88" />
+    </Style>
+    <Style Selector="Button.settingsNavItem.selected">
+      <Setter Property="Background" Value="{DynamicResource CommandBarActiveBg}" />
+    </Style>
+    <Style Selector="Button.settingsNavItem.selected /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource CommandBarActiveBg}" />
+    </Style>
+
+    <Style Selector="Button.choiceCard">
+      <Setter Property="Background" Value="{DynamicResource CardBg}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource CardBorderBrush}" />
+      <Setter Property="BorderThickness" Value="1.5" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="12,10" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    </Style>
+    <Style Selector="Button.choiceCard:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource CardHoverBg}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentPrimary}" />
+    </Style>
+    <Style Selector="Button.choiceCard.selected">
+      <Setter Property="Background" Value="{DynamicResource AccentSubtleBg}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentPrimary}" />
+      <Setter Property="BorderThickness" Value="2" />
+    </Style>
+    <Style Selector="Button.choiceCard.selected /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource AccentSubtleBg}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentPrimary}" />
+    </Style>
+
+    <!-- Distraction-free Windows 11 Notepad Editor TextBox (Always respects PadBackground & PadForeground!) -->
+    <Style Selector="TextBox.notepadEditor">
+      <Style.Resources>
+        <SolidColorBrush x:Key="TextControlBackground" Color="Transparent" />
+        <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="Transparent" />
+        <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="Transparent" />
+        <SolidColorBrush x:Key="TextControlBorderBrush" Color="Transparent" />
+        <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="Transparent" />
+        <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="Transparent" />
+      </Style.Resources>
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="{DynamicResource PadForeground}" />
+      <Setter Property="CaretBrush" Value="{DynamicResource AccentPrimary}" />
+      <Setter Property="SelectionBrush" Value="{DynamicResource PadSelectionBrush}" />
+      <Setter Property="SelectionForegroundBrush" Value="{DynamicResource PadForeground}" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="22,16,22,20" />
+    </Style>
+    <Style Selector="TextBox.notepadEditor /template/ Border#PART_BorderElement">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="TextBox.notepadEditor:pointerover /template/ Border#PART_BorderElement">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="TextBox.notepadEditor:focus /template/ Border#PART_BorderElement">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="TextBox.notepadEditor:pointerover">
+      <Setter Property="Foreground" Value="{DynamicResource PadForeground}" />
+    </Style>
+    <Style Selector="TextBox.notepadEditor:focus">
+      <Setter Property="Foreground" Value="{DynamicResource PadForeground}" />
+    </Style>
+
+    <!-- Clean Fluent Menu Bar Item & Windows 11 Acrylic Context/Dropdown Menu -->
+    <Style Selector="PopupRoot">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="TransparencyBackgroundFallback" Value="{DynamicResource FallbackPopupBg}" />
+      <Setter Property="TransparencyLevelHint" Value="AcrylicBlur, Blur, Transparent" />
+    </Style>
+
+    <Style Selector="Menu.topMenu">
+      <Style.Resources>
+        <x:Double x:Key="MenuBarHeight">25</x:Double>
+      </Style.Resources>
+      <Setter Property="Height" Value="25" />
+      <Setter Property="Padding" Value="0" />
+    </Style>
+    <Style Selector="Menu.topMenu > MenuItem">
+      <Setter Property="Height" Value="25" />
+      <Setter Property="MinHeight" Value="25" />
+      <Setter Property="Padding" Value="9,0" />
+      <Setter Property="Margin" Value="0,0,3,0" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="FontSize" Value="12.5" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+    </Style>
+    <Style Selector="Menu.topMenu > MenuItem /template/ Border#PART_LayoutRoot">
+      <Setter Property="Height" Value="25" />
+      <Setter Property="MinHeight" Value="25" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Menu.topMenu > MenuItem /template/ ContentPresenter#PART_HeaderPresenter">
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Menu.topMenu > MenuItem:pointerover /template/ Border#PART_LayoutRoot">
+      <Setter Property="Background" Value="{DynamicResource CommandBarHoverBg}" />
+    </Style>
+    <Style Selector="Menu.topMenu > MenuItem:selected /template/ Border#PART_LayoutRoot">
+      <Setter Property="Background" Value="{DynamicResource CommandBarHoverBg}" />
+    </Style>
+    <Style Selector="Menu.topMenu > MenuItem:open /template/ Border#PART_LayoutRoot">
+      <Setter Property="Background" Value="{DynamicResource CommandBarActiveBg}" />
+    </Style>
+    <Style Selector="Menu.topMenu > MenuItem:pressed /template/ Border#PART_LayoutRoot">
+      <Setter Property="Background" Value="{DynamicResource CommandBarActiveBg}" />
+    </Style>
+    <Style Selector="Menu.topMenu > MenuItem:pressed /template/ ContentPresenter#PART_HeaderPresenter">
+      <Setter Property="Opacity" Value="0.86" />
+    </Style>
+    <Style Selector="Menu.topMenu > MenuItem /template/ Popup#PART_Popup">
+      <Setter Property="VerticalOffset" Value="5" />
+    </Style>
+
+    <!-- Windows 11 New Context Menu Row Pills, Icons, Shortcuts & Separators -->
+    <Style Selector="PopupRoot MenuItem">
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="MinHeight" Value="32" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style Selector="PopupRoot MenuItem /template/ Border#PART_LayoutRoot">
+      <Setter Property="CornerRadius" Value="6" />
+    </Style>
+    <Style Selector="PopupRoot MenuItem /template/ ContentControl#PART_IconPresenter">
+      <Setter Property="Width" Value="16" />
+      <Setter Property="Height" Value="16" />
+      <Setter Property="Margin" Value="0,0,10,0" />
+    </Style>
+    <Style Selector="PopupRoot MenuItem PathIcon">
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
+    </Style>
+    <Style Selector="PopupRoot MenuItem:pointerover PathIcon">
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+    </Style>
+    <Style Selector="PopupRoot MenuItem /template/ TextBlock#PART_InputGestureText">
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="Margin" Value="26,0,0,0" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="PopupRoot Separator">
+      <Setter Property="Background" Value="{DynamicResource MenuSeparatorBrush}" />
+      <Setter Property="Height" Value="1" />
+      <Setter Property="Margin" Value="-4,5,-4,5" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Height="1" Background="{TemplateBinding Background}" />
+        </ControlTemplate>
+      </Setter>
+    </Style>
+
+    <Style Selector="ContextMenu">
+      <Setter Property="Background" Value="{DynamicResource MenuFlyoutPresenterBackground}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MenuFlyoutPresenterBorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="4,5" />
+    </Style>
+  </Application.Styles>
+
+  <Application.Resources>
+    <!-- Windows 11 New Context Menu / Flyout Geometry Overrides -->
+    <CornerRadius x:Key="OverlayCornerRadius">8</CornerRadius>
+    <Thickness x:Key="MenuFlyoutPresenterThemePadding">4,5</Thickness>
+    <Thickness x:Key="MenuFlyoutItemMargin">4,1.5</Thickness>
+    <Thickness x:Key="MenuFlyoutItemThemePadding">11,6,12,6</Thickness>
+    <Thickness x:Key="MenuFlyoutItemThemePaddingNarrow">11,6,12,6</Thickness>
+    <Thickness x:Key="MenuFlyoutSeparatorThemePadding">10,4,10,4</Thickness>
+    <x:Double x:Key="MenuFlyoutThemeMinWidth">248</x:Double>
+
+    <!-- Default Seed Brushes (Immediately updated by FluentPaletteEngine on startup) -->
+    <SolidColorBrush x:Key="WindowChromeBg" Color="#F0F2F5" />
+    <SolidColorBrush x:Key="FallbackSolidChromeBg" Color="#EAECEF" />
+    <SolidColorBrush x:Key="FallbackPopupBg" Color="#F8F9FC" />
+    <SolidColorBrush x:Key="MenuSeparatorBrush" Color="#14000000" />
+    <SolidColorBrush x:Key="TabRailBg" Color="#ECEEF2" />
+    <SolidColorBrush x:Key="TabActiveBg" Color="#F9FAFC" />
+    <SolidColorBrush x:Key="TabHoverBg" Color="#E3E6EC" />
+    <SolidColorBrush x:Key="CommandBarHoverBg" Color="#0C000000" />
+    <SolidColorBrush x:Key="CommandBarActiveBg" Color="#12000000" />
+    <SolidColorBrush x:Key="MenuBarBg" Color="#F9FAFC" />
+    <SolidColorBrush x:Key="StatusBarBg" Color="#EEF0F4" />
+    <SolidColorBrush x:Key="CardBg" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="CardHoverBg" Color="#F6F7FA" />
+    <SolidColorBrush x:Key="CardBorderBrush" Color="#18000000" />
+    <SolidColorBrush x:Key="SubtleBorderBrush" Color="#12000000" />
+    <SolidColorBrush x:Key="TitleBarSeamBrush" Color="#18000000" />
+    <SolidColorBrush x:Key="TextPrimary" Color="#18191C" />
+    <SolidColorBrush x:Key="TextSecondary" Color="#5A5F6B" />
+    <SolidColorBrush x:Key="TextMuted" Color="#7B818F" />
+    <SolidColorBrush x:Key="AccentPrimary" Color="#0078D4" />
+    <SolidColorBrush x:Key="AccentHover" Color="#006CBE" />
+    <SolidColorBrush x:Key="AccentPressed" Color="#005A9E" />
+    <SolidColorBrush x:Key="AccentSubtleBg" Color="#E6F2FB" />
+    <SolidColorBrush x:Key="AccentOnFillText" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="PadBackground" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="PadForeground" Color="#1A1B1E" />
+    <SolidColorBrush x:Key="PadBorderBrush" Color="#18000000" />
+    <SolidColorBrush x:Key="PadSelectionBrush" Color="#550078D4" />
+    <SolidColorBrush x:Key="DialogOverlayBg" Color="#770F1218" />
+    <SolidColorBrush x:Key="DialogSurfaceBg" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="UnsavedYellowDotBrush" Color="#FFD43B" />
+
+    <!-- Crisp 20x20 Fluent Vector Path Geometries -->
+    <StreamGeometry x:Key="IconShieldLock">M10 1.5L3 4.6V9.8C3 14.35 5.98 18.58 10 19.9C14.02 18.58 17 14.35 17 9.8V4.6L10 1.5ZM10 6.2C11.22 6.2 12.2 7.18 12.2 8.4V9.5H12.6C13.15 9.5 13.6 9.95 13.6 10.5V13.8C13.6 14.35 13.15 14.8 12.6 14.8H7.4C6.85 14.8 6.4 14.35 6.4 13.8V10.5C6.4 9.95 6.85 9.5 7.4 9.5H7.8V8.4C7.8 7.18 8.78 6.2 10 6.2ZM10 7.4C9.45 7.4 9 7.85 9 8.4V9.5H11V8.4C11 7.85 10.55 7.4 10 7.4Z</StreamGeometry>
+    <StreamGeometry x:Key="IconShieldOutline">M10 1.6L3.2 4.6V9.8C3.2 14.22 6.09 18.33 10 19.65C13.91 18.33 16.8 14.22 16.8 9.8V4.6L10 1.6ZM10 3.24L15.3 5.58V9.8C15.3 13.43 12.97 16.85 10 18.08C7.03 16.85 4.7 13.43 4.7 9.8V5.58L10 3.24ZM10 6.4C8.84 6.4 7.9 7.34 7.9 8.5V9.5H7.5C6.95 9.5 6.5 9.95 6.5 10.5V13.6C6.5 14.15 6.95 14.6 7.5 14.6H12.5C13.05 14.6 13.5 14.15 13.5 13.6V10.5C13.5 9.95 13.05 9.5 12.5 9.5H12.1V8.5C12.1 7.34 11.16 6.4 10 6.4ZM10 7.55C10.52 7.55 10.95 7.98 10.95 8.5V9.5H9.05V8.5C9.05 7.98 9.48 7.55 10 7.55Z</StreamGeometry>
+    <StreamGeometry x:Key="IconDocumentPlain">M5.5 2C4.67 2 4 2.67 4 3.5V16.5C4 17.33 4.67 18 5.5 18H14.5C15.33 18 16 17.33 16 16.5V6.5L11.5 2H5.5ZM11 3.5L14.5 7H11V3.5ZM6.5 9.5H13.5V10.8H6.5V9.5ZM6.5 12.2H13.5V13.5H6.5V12.2ZM6.5 14.9H11V16.2H6.5V14.9Z</StreamGeometry>
+    <StreamGeometry x:Key="IconSettingsGear">M11.25 2.1L11.66 4.02C12.22 4.21 12.74 4.51 13.2 4.9L15.06 4.28L16.31 6.45L14.83 7.76C14.91 8.17 14.95 8.58 14.95 9C14.95 9.42 14.91 9.83 14.83 10.24L16.31 11.55L15.06 13.72L13.2 13.1C12.74 13.49 12.22 13.79 11.66 13.98L11.25 15.9H8.75L8.34 13.98C7.78 13.79 7.26 13.49 6.8 13.1L4.94 13.72L3.69 11.55L5.17 10.24C5.09 9.83 5.05 9.42 5.05 9C5.05 8.58 5.09 8.17 5.17 7.76L3.69 6.45L4.94 4.28L6.8 4.9C7.26 4.51 7.78 4.21 8.34 4.02L8.75 2.1H11.25ZM10 6.5C8.62 6.5 7.5 7.62 7.5 9C7.5 10.38 8.62 11.5 10 11.5C11.38 11.5 12.5 10.38 12.5 9C12.5 7.62 11.38 6.5 10 6.5Z</StreamGeometry>
+    <StreamGeometry x:Key="IconArrowBack">M16.5 9.25H5.31L9.78 4.78L8.72 3.72L2.44 10L8.72 16.28L9.78 15.22L5.31 10.75H16.5V9.25Z</StreamGeometry>
+    <StreamGeometry x:Key="IconPlus">M9.25 3.5V9.25H3.5V10.75H9.25V16.5H10.75V10.75H16.5V9.25H10.75V3.5H9.25Z</StreamGeometry>
+    <StreamGeometry x:Key="IconClose">M4.7 3.64L10 8.94L15.3 3.64L16.36 4.7L11.06 10L16.36 15.3L15.3 16.36L10 11.06L4.7 16.36L3.64 15.3L8.94 10L3.64 4.7L4.7 3.64Z</StreamGeometry>
+    <StreamGeometry x:Key="IconSearch">M8.5 3C11.54 3 14 5.46 14 8.5C14 9.83 13.53 11.05 12.74 12L16.85 16.11L15.79 17.17L11.68 13.06C10.77 13.66 9.68 14 8.5 14C5.46 14 3 11.54 3 8.5C3 5.46 5.46 3 8.5 3ZM8.5 4.5C6.29 4.5 4.5 6.29 4.5 8.5C4.5 10.71 6.29 12.5 8.5 12.5C10.71 12.5 12.5 10.71 12.5 8.5C12.5 6.29 10.71 4.5 8.5 4.5Z</StreamGeometry>
+    <StreamGeometry x:Key="IconSave">M4.5 3C3.67 3 3 3.67 3 4.5V15.5C3 16.33 3.67 17 4.5 17H15.5C16.33 17 17 16.33 17 15.5V6.62L13.38 3H4.5ZM6 4.5H12V8H6V4.5ZM6 11H14V15.5H6V11Z</StreamGeometry>
+    <StreamGeometry x:Key="IconCheck">M16.28 5.22L7.75 13.75L3.72 9.72L2.66 10.78L7.75 15.87L17.34 6.28L16.28 5.22Z</StreamGeometry>
+    <StreamGeometry x:Key="IconEye">M10 4.5C5.8 4.5 2.27 7.11 1 10.5C2.27 13.89 5.8 16.5 10 16.5C14.2 16.5 17.73 13.89 19 10.5C17.73 7.11 14.2 4.5 10 4.5ZM10 14.5C7.79 14.5 6 12.71 6 10.5C6 8.29 7.79 6.5 10 6.5C12.21 6.5 14 8.29 14 10.5C14 12.71 12.21 14.5 10 14.5ZM10 8.2C8.73 8.2 7.7 9.23 7.7 10.5C7.7 11.77 8.73 12.8 10 12.8C11.27 12.8 12.3 11.77 12.3 10.5C12.3 9.23 11.27 8.2 10 8.2Z</StreamGeometry>
+    <StreamGeometry x:Key="IconTheme">M10 2C5.58 2 2 5.58 2 10C2 14.42 5.58 18 10 18C14.42 18 18 14.42 18 10C18 5.58 14.42 2 10 2ZM10 16.4V3.6C13.53 3.6 16.4 6.47 16.4 10C16.4 13.53 13.53 16.4 10 16.4Z</StreamGeometry>
+    <StreamGeometry x:Key="IconPalette">M10 2.2C5.58 2.2 2 5.42 2 9.4C2 13.38 5.58 16.6 10 16.6C10.83 16.6 11.5 15.93 11.5 15.1C11.5 14.71 11.35 14.36 11.11 14.09C10.88 13.83 10.74 13.49 10.74 13.1C10.74 12.27 11.41 11.6 12.24 11.6H14C16.21 11.6 18 9.81 18 7.6C18 4.62 14.42 2.2 10 2.2ZM5.5 9.5C4.67 9.5 4 8.83 4 8C4 7.17 4.67 6.5 5.5 6.5C6.33 6.5 7 7.17 7 8C7 8.83 6.33 9.5 5.5 9.5ZM8.5 6.5C7.67 6.5 7 5.83 7 5C7 4.17 7.67 3.5 8.5 3.5C9.33 3.5 10 4.17 10 5C10 5.83 9.33 6.5 8.5 6.5ZM12.5 6.5C11.67 6.5 11 5.83 11 5C11 4.17 11.67 3.5 12.5 3.5C13.33 3.5 14 4.17 14 5C14 5.83 13.33 6.5 12.5 6.5Z</StreamGeometry>
+    <StreamGeometry x:Key="IconPadSheet">M5 2.5C3.9 2.5 3 3.4 3 4.5V15.5C3 16.6 3.9 17.5 5 17.5H15C16.1 17.5 17 16.6 17 15.5V4.5C17 3.4 16.1 2.5 15 2.5H5ZM6 6H14V7.4H6V6ZM6 9.3H14V10.7H6V9.3ZM6 12.6H11.5V14H6V12.6Z</StreamGeometry>
+    <StreamGeometry x:Key="IconKey">M12.5 3C9.74 3 7.5 5.24 7.5 8C7.5 8.62 7.62 9.21 7.83 9.76L2.5 15.09V18H5.5V16H7.5V14H9.41L10.74 12.67C11.29 12.88 11.88 13 12.5 13C15.26 13 17.5 10.76 17.5 8C17.5 5.24 15.26 3 12.5 3ZM13.5 8.5C12.67 8.5 12 7.83 12 7C12 6.17 12.67 5.5 13.5 5.5C14.33 5.5 15 6.17 15 7C15 7.83 14.33 8.5 13.5 8.5Z</StreamGeometry>
+    <StreamGeometry x:Key="IconInfo">M10 2C5.58 2 2 5.58 2 10C2 14.42 5.58 18 10 18C14.42 18 18 14.42 18 10C18 5.58 14.42 2 10 2ZM10.8 14.5H9.2V9H10.8V14.5ZM10.8 7.4H9.2V5.8H10.8V7.4Z</StreamGeometry>
+
+    <!-- Windows 11 Context / Dropdown Menu Monoline Fluent Icons (20x20 viewbox) -->
+    <StreamGeometry x:Key="IconHamburger">M3 5.25H17V6.65H3V5.25ZM3 9.3H17V10.7H3V9.3ZM3 13.35H17V14.75H3V13.35Z</StreamGeometry>
+    <StreamGeometry x:Key="IconSaveOutline">M4.5 2.5C3.67 2.5 3 3.17 3 4V16C3 16.83 3.67 17.5 4.5 17.5H15.5C16.33 17.5 17 16.83 17 16V6.6L12.9 2.5H4.5ZM4.4 4C4.4 3.94 4.44 3.9 4.5 3.9H6V7.8H13V4.58L15.6 7.18V16C15.6 16.06 15.56 16.1 15.5 16.1H14.2V11.2H5.8V16.1H4.5C4.44 16.1 4.4 16.06 4.4 16V4ZM7.4 3.9H11.6V6.4H7.4V3.9ZM7.2 12.6H12.8V16.1H7.2V12.6Z</StreamGeometry>
+    <StreamGeometry x:Key="IconWindowNew">M4.5 3C3.67 3 3 3.67 3 4.5V15.5C3 16.33 3.67 17 4.5 17H11V15.6H4.5C4.44 15.6 4.4 15.56 4.4 15.5V7.5H15.6V10.5H17V4.5C17 3.67 16.33 3 15.5 3H4.5ZM4.4 6.1V4.5C4.4 4.44 4.44 4.4 4.5 4.4H15.5C15.56 4.4 15.6 4.44 15.6 4.5V6.1H4.4ZM14.3 11.5V14.3H11.5V15.7H14.3V18.5H15.7V15.7H18.5V14.3H15.7V11.5H14.3Z</StreamGeometry>
+    <StreamGeometry x:Key="IconFolderOpen">M3.5 4C2.67 4 2 4.67 2 5.5V14.5C2 15.33 2.67 16 3.5 16H16.5C17.33 16 18 15.33 18 14.5V7.5C18 6.67 17.33 6 16.5 6H9.62L7.62 4H3.5ZM3.4 5.5C3.4 5.44 3.44 5.4 3.5 5.4H7.04L9.04 7.4H16.5C16.56 7.4 16.6 7.44 16.6 7.5V8.3H3.4V5.5ZM3.4 9.7H16.6V14.5C16.6 14.56 16.56 14.6 16.5 14.6H3.5C3.44 14.6 3.4 14.56 3.4 14.5V9.7Z</StreamGeometry>
+    <StreamGeometry x:Key="IconHistoryClock">M10 2.5C5.86 2.5 2.5 5.86 2.5 10C2.5 14.14 5.86 17.5 10 17.5C14.14 17.5 17.5 14.14 17.5 10C17.5 5.86 14.14 2.5 10 2.5ZM10 3.9C13.37 3.9 16.1 6.63 16.1 10C16.1 13.37 13.37 16.1 10 16.1C6.63 16.1 3.9 13.37 3.9 10C3.9 6.63 6.63 3.9 10 3.9ZM9.3 5.8V10.45L13.1 12.73L13.82 11.53L10.7 9.66V5.8H9.3Z</StreamGeometry>
+    <StreamGeometry x:Key="IconSaveAs">M4.5 2.5C3.67 2.5 3 3.17 3 4V15C3 15.83 3.67 16.5 4.5 16.5H10.5V15.1H4.5C4.44 15.1 4.4 15.06 4.4 15V4C4.4 3.94 4.44 3.9 4.5 3.9H5.6V7.5H12.2V4.78L14.6 7.18V10.2H16V6.6L11.9 2.5H4.5ZM7 3.9H10.8V6.1H7V3.9ZM15.85 11.4L11.5 15.75V18H13.75L18.1 13.65L15.85 11.4Z</StreamGeometry>
+    <StreamGeometry x:Key="IconExitDoor">M4.5 2.5C3.67 2.5 3 3.17 3 4V16C3 16.83 3.67 17.5 4.5 17.5H11.5C12.33 17.5 13 16.83 13 16V13.5H11.6V16C11.6 16.06 11.56 16.1 11.5 16.1H4.5C4.44 16.1 4.4 16.06 4.4 16V4C4.4 3.94 4.44 3.9 4.5 3.9H11.5C11.56 3.9 11.6 3.94 11.6 4V6.5H13V4C13 3.17 12.33 2.5 11.5 2.5H4.5ZM13.94 6.72L12.88 7.78L14.39 9.3H7.5V10.7H14.39L12.88 12.22L13.94 13.28L17.22 10L13.94 6.72Z</StreamGeometry>
+    <StreamGeometry x:Key="IconUndo">M6.8 4.2L2.5 8.5L6.8 12.8L7.8 11.8L5.2 9.2H12C14.21 9.2 16 10.99 16 13.2C16 14.3 15.55 15.3 14.83 16.03L15.83 17.03C16.8 16.05 17.4 14.7 17.4 13.2C17.4 10.22 14.98 7.8 12 7.8H5.2L7.8 5.2L6.8 4.2Z</StreamGeometry>
+    <StreamGeometry x:Key="IconRedo">M13.2 4.2L12.2 5.2L14.8 7.8H8C5.02 7.8 2.6 10.22 2.6 13.2C2.6 14.7 3.2 16.05 4.17 17.03L5.17 16.03C4.45 15.3 4 14.3 4 13.2C4 10.99 5.79 9.2 8 9.2H14.8L12.2 11.8L13.2 12.8L17.5 8.5L13.2 4.2Z</StreamGeometry>
+    <StreamGeometry x:Key="IconCut">M6 3C4.34 3 3 4.34 3 6C3 7.66 4.34 9 6 9C6.62 9 7.2 8.81 7.68 8.48L9.2 10L7.68 11.52C7.2 11.19 6.62 11 6 11C4.34 11 3 12.34 3 14C3 15.66 4.34 17 6 17C7.66 17 9 15.66 9 14C9 13.38 8.81 12.8 8.48 12.32L10 10.8L15.4 16.2H17.2L8.48 7.48C8.81 7 9 6.52 9 6C9 4.34 7.66 3 6 3ZM6 4.4C6.88 4.4 7.6 5.12 7.6 6C7.6 6.88 6.88 7.6 6 7.6C5.12 7.6 4.4 6.88 4.4 6C4.4 5.12 5.12 4.4 6 4.4ZM15.4 3.8L10.9 8.3L11.7 9.1L17.2 3.8H15.4ZM6 12.4C6.88 12.4 7.6 13.12 7.6 14C7.6 14.88 6.88 15.6 6 15.6C5.12 15.6 4.4 14.88 4.4 14C4.4 13.12 5.12 12.4 6 12.4Z</StreamGeometry>
+    <StreamGeometry x:Key="IconCopy">M6.5 2.5C5.67 2.5 5 3.17 5 4V5H4C3.17 5 2.5 5.67 2.5 6.5V16C2.5 16.83 3.17 17.5 4 17.5H12.5C13.33 17.5 14 16.83 14 16V15H15C15.83 15 16.5 14.33 16.5 13.5V4C16.5 3.17 15.83 2.5 15 2.5H6.5ZM6.4 4C6.4 3.94 6.44 3.9 6.5 3.9H15C15.06 3.9 15.1 3.94 15.1 4V13.5C15.1 13.56 15.06 13.6 15 13.6H14V6.5C14 5.67 13.33 5 12.5 5H6.4V4ZM4 6.4H12.5C12.56 6.4 12.6 6.44 12.6 6.5V16C12.6 16.06 12.56 16.1 12.5 16.1H4C3.94 16.1 3.9 16.06 3.9 16V6.5C3.9 6.44 3.94 6.4 4 6.4Z</StreamGeometry>
+    <StreamGeometry x:Key="IconPaste">M7.5 2C6.85 2 6.3 2.42 6.09 3H4.5C3.67 3 3 3.67 3 4.5V16C3 16.83 3.67 17.5 4.5 17.5H14.5C15.33 17.5 16 16.83 16 16V4.5C16 3.67 15.33 3 14.5 3H12.91C12.7 2.42 12.15 2 11.5 2H7.5ZM7.5 3.3H11.5C11.67 3.3 11.8 3.43 11.8 3.6V4.4H7.2V3.6C7.2 3.43 7.33 3.3 7.5 3.3ZM4.4 4.5C4.4 4.44 4.44 4.4 4.5 4.4H5.8V5.7H13.2V4.4H14.5C14.56 4.4 14.6 4.44 14.6 4.5V16C14.6 16.06 14.56 16.1 14.5 16.1H4.5C4.44 16.1 4.4 16.06 4.4 16V4.5Z</StreamGeometry>
+  </Application.Resources>
+</Application>
