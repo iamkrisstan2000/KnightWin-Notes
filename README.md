@@ -6,6 +6,23 @@ Built natively in C# / .NET 8 (**zero Electron**, zero web-view bloat, and **100
 
 ---
 
+## 📸 Screenshots 
+
+<img width="1919" height="1079" alt="Screenshot 2026-11-11 190047" src="https://github.com/user-attachments/assets/2021fcb6-c066-43fa-8f8b-433bf028df25" />
+<img width="1919" height="1079" alt="Screenshot 2026-11-11 190040" src="https://github.com/user-attachments/assets/e060eeb2-0b4d-49b0-ad12-b62c2ed5b297" />
+<img width="1919" height="1079" alt="Screenshot 2026-11-11 190034" src="https://github.com/user-attachments/assets/fffdcabf-20ab-49dc-b57d-ba45b2a84b2a" />
+<img width="1919" height="1079" alt="Screenshot 2026-11-11 190009" src="https://github.com/user-attachments/assets/453b7550-38cf-4212-be46-fb367dc7380f" />
+<img width="1919" height="1079" alt="Screenshot 2026-11-11 190003" src="https://github.com/user-attachments/assets/32e0a9c0-3531-4950-a9cf-791fbd0388f0" />
+<img width="1919" height="1079" alt="Screenshot 2026-11-11 185954" src="https://github.com/user-attachments/assets/44df9c13-703a-4196-9f44-dadefd3fbf5d" />
+<img width="1919" height="1079" alt="Screenshot 2026-11-11 185949" src="https://github.com/user-attachments/assets/44c4b10c-0a6c-477b-a782-c8f296ca2b9a" />
+<img width="1918" height="1079" alt="Screenshot 2026-11-11 185942" src="https://github.com/user-attachments/assets/ecd53d6b-79c3-4a0c-8ca4-a067372ae119" />
+<img width="1919" height="1079" alt="Screenshot 2026-11-11 185922" src="https://github.com/user-attachments/assets/5ac6d4c4-17b7-484d-a4ba-131e8d57d676" />
+<img width="1919" height="1079" alt="Screenshot 2026-11-11 190108" src="https://github.com/user-attachments/assets/d1cb7aa9-a5ab-47b6-a72f-e9914ccca6a8" />
+<img width="1916" height="1079" alt="Screenshot 2026-11-11 190102" src="https://github.com/user-attachments/assets/e63850c8-7873-4f9d-95b4-ef1af62a0a2e" />
+<img width="1918" height="1078" alt="Screenshot 2026-11-11 190054" src="https://github.com/user-attachments/assets/9f5930ce-be44-48a3-922c-9f8970154414" />
+
+
+
 ## ✨ Features
 
 - **Plain & Secure Modes in One Click**
